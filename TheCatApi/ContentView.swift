@@ -6,16 +6,44 @@
 //
 
 import SwiftUI
+import Combine
 
 struct ContentView: View {
+
+    @StateObject var viewModel = ViewModelCat(apiCats: ApiCats())
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        NavigationView{
+            VStack {
+                List(viewModel.breeds) { breed in
+                    VStack {
+                        Text(breed.breedName)
+                            .frame(alignment: .leading)
+                            .fontWeight(.bold)
+                            .font(.title)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        ImageBreed(urlString: breed.imageUrl)
+                        HStack {
+                            Text(breed.origin)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .frame(alignment: .leading)
+                                .fontWeight(.bold)
+                                .font(.title)
+                            Text("\(breed.intelligence)")
+                                .frame(maxWidth: .infinity,alignment: .trailing)
+                                .frame(alignment: .leading)
+                                .fontWeight(.bold)
+                                .font(.title)
+                        }
+                    }
+                }
+            }
+            .padding()
+            .task {
+                await viewModel.getCats()
+            }
+            .navigationBarTitle("Catbreeds", displayMode: .inline)
         }
-        .padding()
     }
 }
 
